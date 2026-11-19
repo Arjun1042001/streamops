@@ -14,7 +14,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: arjun99git/my-first-pipeline
+  IMAGE_NAME: arjun1042001/streamops
 
 jobs:
   publish:
@@ -40,10 +40,10 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/arjun99git/my-first-pipeline:sha-${{ github.sha }}
-            ghcr.io/arjun99git/my-first-pipeline:main
+            ghcr.io/arjun1042001/streamops:sha-${{ github.sha }}
+            ghcr.io/arjun1042001/streamops:main
           labels: |
-            org.opencontainers.image.source=https://github.com/Arjun99git/my-first-pipeline
+            org.opencontainers.image.source=https://github.com/Arjun1042001/streamops
             org.opencontainers.image.description=Secure DevSecOps Docker pipeline
           sbom: true
           provenance: mode=max
