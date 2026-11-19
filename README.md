@@ -1,106 +1,78 @@
-﻿# StreamOps — Secure Cloud-Native Streaming Platform
+# StreamOps — Secure Cloud-Native Streaming Platform
 
-![Docker Pipeline](https://github.com/Arjun99git/my-first-pipeline/actions/workflows/pipeline.yml/badge.svg)
-![Security Pipeline](https://github.com/Arjun99git/my-first-pipeline/actions/workflows/security.yml/badge.svg)
-![GHCR Pipeline](https://github.com/Arjun99git/my-first-pipeline/actions/workflows/publish-ghcr.yml/badge.svg)
+Secure CI/CD & Kubernetes deployment — GitHub Actions, Docker, Semgrep/Trivy/OWASP ZAP, Helm
 
-## Project Overview
+![Docker Pipeline](https://github.com/Arjun1042001/streamops/actions/workflows/pipeline.yml/badge.svg)
+![Security Pipeline](https://github.com/Arjun1042001/streamops/actions/workflows/security.yml/badge.svg)
+![GHCR Pipeline](https://github.com/Arjun1042001/streamops/actions/workflows/publish-ghcr.yml/badge.svg)
+
+## What this project does
 
 StreamOps is a containerized application deployment project designed to demonstrate a practical CI/CD and Kubernetes workflow.
 
 The project stores application configuration, Kubernetes manifests, and Helm templates in a GitHub repository. It provides a structured way to build, configure, and deploy the StreamOps application to a Kubernetes cluster.
-## Architecture
 
-    Developer Commit
-           |
-           v
-    GitHub / GitLab
-           |
-           v
-    CI/CD Pipeline
-           |
-           +--> Application Testing
-           +--> Semgrep SAST
-           +--> Trivy Filesystem Scan
-           +--> Docker Image Build
-           +--> Trivy Image Scan
-           +--> OWASP ZAP DAST
-           +--> Security Reports
-           |
-           v
-    GitHub Container Registry
-           |
-           v
-    Kubernetes / Minikube
-           |
-           +--> Two Application Replicas
-           +--> Kubernetes Service
-           +--> ConfigMap
-           +--> Readiness Probe
-           +--> Liveness Probe
-           +--> Resource Requests and Limits
-           +--> Rolling Deployment
+The StreamOps web application has a home page and a login page (`index.html` and `login.html`), with ConfigMap-based application settings, a Kubernetes deployment and Service, and a Helm chart for reusable deployments.
 
-             Key Features
-StreamOps web application with a home page
-Kubernetes deployment configuration
-Kubernetes Service configuration
-ConfigMap-based application settings
-Helm chart for reusable deployments
-Git-based source control
-Containerized deployment workflow
-Environment-specific configuration support
-Repository Structure
-my-first-pipeline/
-├── docs/
-│   └── images/
-│       └── streamops-home.png
-├── helm/
-│   └── my-first-pipeline/
-│       ├── templates/
-│       ├── Chart.yaml
-│       └── values.yaml
-├── k8s/
-│   ├── configmap.yaml
-│   ├── deployment.yaml
-│   └── service.yaml
-└── README.md
-Deployment Options
+## Architecture / How it works
 
-StreamOps can be deployed using standard Kubernetes manifests:
+```text
+Developer Commit
+       |
+       v
+GitHub / GitLab
+       |
+       v
+CI/CD Pipeline
+       |
+       +--> Application Testing
+       +--> Semgrep SAST
+       +--> Trivy Filesystem Scan
+       +--> Docker Image Build
+       +--> Trivy Image Scan
+       +--> OWASP ZAP DAST
+       +--> Security Reports
+       |
+       v
+GitHub Container Registry
+       |
+       v
+Kubernetes / Minikube
+       |
+       +--> Two Application Replicas
+       +--> Kubernetes Service
+       +--> ConfigMap
+       +--> Readiness Probe
+       +--> Liveness Probe
+       +--> Resource Requests and Limits
+       +--> Rolling Deployment
+```
 
-kubectl apply -f k8s/
+The delivery workflow is split across three GitHub Actions workflows in `.github/workflows/`:
 
-It can also be deployed using Helm:
+- `pipeline.yml` — build and test the application.
+- `security.yml` — security scanning and reporting.
+- `publish-ghcr.yml` — publish the validated image to GitHub Container Registry.
 
-helm install streamops ./helm/my-first-pipeline
+An equivalent GitLab CI/CD pipeline is provided in `.gitlab-ci.yml`.
 
-To update an existing Helm deployment:
+Deployment uses the manifests in `k8s/` and the Helm chart in `helm/my-first-pipeline/`:
 
-helm upgrade streamops ./helm/my-first-pipeline
-Application Preview
-StreamOps Home Page
+- `k8s/app.yaml` defines the `my-first-pipeline` Deployment and Service. The Deployment runs 2 replicas of `nginx:alpine` with a RollingUpdate strategy, on container port 80, with readiness and liveness probes, CPU and memory requests of 50m / 32Mi and limits of 200m / 128Mi. It mounts the `website-html` ConfigMap read-only at `/usr/share/nginx/html`. The Service is a NodePort Service.
+- `k8s/configmap.yaml` provides the ConfigMap-based application settings.
+- `helm/my-first-pipeline/` (`Chart.yaml`, `values.yaml`, `templates/`) packages the same deployment for reusable, environment-specific installs with `helm install` / `helm upgrade`.
 
+## Tech stack
 
-
-
-Current Project Status
-
-The project currently uses Kubernetes manifests and Helm for deployment.
-
-
-
-Purpose
-
-The purpose of StreamOps is to demonstrate:
-
-application containerization
-Kubernetes resource management
-Helm-based packaging
-configuration management
-Git-based development workflows
-repeatable application deployment
-## Technologies
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-%232088FF.svg?style=for-the-badge&logo=githubactions&logoColor=white)
+![GitLab CI/CD](https://img.shields.io/badge/GitLab_CI%2FCD-%23FC6D26.svg?style=for-the-badge&logo=gitlab&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-%232496ED.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-%23326CE5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
+![Helm](https://img.shields.io/badge/Helm-%230F1689.svg?style=for-the-badge&logo=helm&logoColor=white)
+![Semgrep](https://img.shields.io/badge/Semgrep-1E1E1E.svg?style=for-the-badge)
+![Trivy](https://img.shields.io/badge/Trivy-1904DA.svg?style=for-the-badge)
+![OWASP ZAP](https://img.shields.io/badge/OWASP_ZAP-00549E.svg?style=for-the-badge)
 
 - Git and GitHub
 - GitLab
@@ -113,6 +85,42 @@ repeatable application deployment
 - Trivy
 - OWASP ZAP
 - PowerShell
+
+## Repository structure
+
+```text
+.
+├── .github/workflows/
+│   ├── pipeline.yml
+│   ├── security.yml
+│   └── publish-ghcr.yml
+├── .gitlab-ci.yml
+├── Dockerfile
+├── index.html
+├── login.html
+├── k8s/
+│   ├── app.yaml
+│   └── configmap.yaml
+├── helm/my-first-pipeline/
+│   ├── Chart.yaml
+│   ├── values.yaml
+│   ├── .helmignore
+│   └── templates/
+├── docs/images/
+│   ├── project-preview.png
+│   └── streamops-login.png
+├── streamops-home.png.png
+├── streamops-login.png
+└── README.md
+```
+
+## Key work demonstrated
+
+- Implemented equivalent DevSecOps workflows in GitHub Actions (3 workflows) and GitLab CI/CD.
+- Automated build, application validation, Semgrep SAST, Trivy filesystem and image scanning, and OWASP ZAP DAST, with security-report and artifact upload.
+- Published immutable Docker images to GitHub Container Registry using commit-SHA tags, with SBOM and provenance metadata.
+- Deployed the application to Kubernetes with two Nginx replicas, a rolling-update strategy, ConfigMap settings, and readiness and liveness probes, plus CPU and memory requests and limits.
+- Resolved CI configuration, reserved-stage, Docker networking, Kubernetes context, and local-cluster issues.
 
 ## DevSecOps Pipeline
 
@@ -129,20 +137,6 @@ The automated delivery workflow performs:
 9. Docker image publishing to GHCR
 10. Immutable image tagging using the Git commit SHA
 
-## Kubernetes Implementation
-
-The application is deployed with:
-
-- Two Nginx replicas
-- Rolling-update deployment strategy
-- Kubernetes ConfigMap
-- NodePort Service
-- Readiness probe for traffic management
-- Liveness probe for automatic recovery
-- CPU and memory requests
-- CPU and memory limits
-- Local Minikube cluster
-
 ## Security Controls
 
 | Area | Implementation |
@@ -157,70 +151,79 @@ The application is deployed with:
 | Runtime health | Liveness and readiness probes |
 | Resource governance | Kubernetes requests and limits |
 
-## Repository Structure
+## Run Locally with Docker
 
-    my-first-pipeline/
-    â”œâ”€â”€ .github/workflows/
-    â”‚   â”œâ”€â”€ pipeline.yml
-    â”‚   â”œâ”€â”€ security.yml
-    â”‚   â””â”€â”€ publish-ghcr.yml
-    â”œâ”€â”€ k8s/
-    â”‚   â”œâ”€â”€ app.yaml
-    â”‚   â””â”€â”€ configmap.yaml
-    â”œâ”€â”€ docs/images/
-    â”‚   â””â”€â”€ project-preview.png
-    â”œâ”€â”€ .gitlab-ci.yml
-    â”œâ”€â”€ Dockerfile
-    â”œâ”€â”€ index.html
-    â””â”€â”€ README.md
+```bash
+docker build -t my-first-pipeline:local .
+docker run -d --name cicd-web -p 8081:80 my-first-pipeline:local
+```
+
+Open:
+
+```text
+http://localhost:8081
+```
+
+## Deploy to Kubernetes
+
+StreamOps can be deployed using standard Kubernetes manifests:
+
+```bash
+kubectl apply -f k8s/
+```
+
+Or with the detailed commands from this repo:
+
+```bash
+minikube start --driver=docker
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/app.yaml
+kubectl rollout status deployment/my-first-pipeline
+kubectl get pods,services
+minikube service my-first-pipeline
+```
+
+It can also be deployed using Helm:
+
+```bash
+helm install streamops ./helm/my-first-pipeline
+```
+
+To update an existing Helm deployment:
+
+```bash
+helm upgrade streamops ./helm/my-first-pipeline
+```
 
 ## Project Preview
 
 ![DevSecOps Project Preview](docs/images/project-preview.png)
 
-## Run Locally with Docker
+### StreamOps Home Page
 
-    docker build -t my-first-pipeline:local .
-    docker run -d --name cicd-web -p 8081:80 my-first-pipeline:local
+![StreamOps Home Page](streamops-home.png.png)
 
-Open:
+### StreamOps Login Page
 
-    http://localhost:8081
+![StreamOps Login Page](docs/images/streamops-login.png)
 
-## Deploy to Kubernetes
+## Purpose
 
-    minikube start --driver=docker
-    kubectl apply -f k8s/configmap.yaml
-    kubectl apply -f k8s/app.yaml
-    kubectl rollout status deployment/my-first-pipeline
-    kubectl get pods,services
-    minikube service my-first-pipeline
+The purpose of StreamOps is to demonstrate:
 
-## Engineering Outcomes
-
-- Implemented equivalent DevSecOps workflows in GitHub Actions and GitLab CI/CD.
-- Automated build, application validation, security scanning, and artifact generation.
-- Published immutable Docker images to GitHub Container Registry.
-- Generated SBOM and provenance metadata for container images.
-- Deployed the application to Kubernetes with two replicas.
-- Implemented readiness and liveness probes for reliability and recovery.
-- Added Kubernetes resource requests and limits.
-- Resolved CI configuration, reserved-stage, Docker networking, Kubernetes context, and local-cluster issues.
+- application containerization
+- Kubernetes resource management
+- Helm-based packaging
+- configuration management
+- Git-based development workflows
+- repeatable application deployment
 
 ## Interview Summary
 
 I designed and implemented a production-style DevSecOps delivery workflow for a containerized Nginx application. GitHub Actions and GitLab CI/CD automate application testing, Semgrep SAST, Trivy filesystem and image scanning, and OWASP ZAP DAST. The validated image is published to GitHub Container Registry using immutable commit-SHA tags with SBOM and provenance metadata. I deployed the application to Kubernetes with two replicas, rolling updates, ConfigMaps, resource controls, and liveness and readiness probes.
 
 ## Scope
+
 The scope of the StreamOps project is to design, configure, and deploy a containerized web application using Kubernetes and Helm.
 
 The project focuses on creating a repeatable deployment process that can be managed through source control and executed in a local or cloud-based Kubernetes environment.
-
-
-## Application Preview
-
-### StreamOps Home Page
-![StreamOps Home Page](docs/images/streamops-home.png)
-
-### StreamOps Login Page
-![StreamOps Login Page](docs/images/streamops-login.png)
